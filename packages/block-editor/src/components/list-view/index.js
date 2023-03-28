@@ -56,6 +56,7 @@ export const BLOCK_LIST_ITEM_HEIGHT = 36;
  *
  * @param {Object}         props                   Components props.
  * @param {string}         props.id                An HTML element id for the root element of ListView.
+ * @param {string}         props.parentId          The client id of the parent block.
  * @param {Array}          props.blocks            Custom subset of block client IDs to be used instead of the default hierarchy.
  * @param {?boolean}       props.showBlockMovers   Flag to enable block movers. Defaults to `false`.
  * @param {?boolean}       props.isExpanded        Flag to determine whether nested levels are expanded by default. Defaults to `false`.
@@ -71,6 +72,7 @@ function ListViewComponent(
 		isExpanded = false,
 		showAppender = false,
 		blockSettingsMenu: BlockSettingsMenu = BlockSettingsDropdown,
+		parentId = null,
 	},
 	ref
 ) {
@@ -219,6 +221,7 @@ function ListViewComponent(
 				<ListViewContext.Provider value={ contextValue }>
 					<ListViewBranch
 						blocks={ clientIdsTree }
+						parentId={ parentId }
 						selectBlock={ selectEditorBlock }
 						showBlockMovers={ showBlockMovers }
 						fixedListWindow={ fixedListWindow }
