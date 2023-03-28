@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import {
@@ -14,7 +9,7 @@ import {
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { createBlock } from '@wordpress/blocks';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { store as coreStore } from '@wordpress/core-data';
 
 /**
@@ -40,7 +35,8 @@ const PAGES_QUERY = [
 ];
 
 export default function NavigationMenuContent( { rootClientId, onSelect } ) {
-	const { clientIdsTree, isLoading, isSinglePageList } = useSelect(
+	const [ isLoading, setIsLoading ] = useState( true );
+	const { clientIdsTree, shouldKeepLoading, isSinglePageList } = useSelect(
 		( select ) => {
 			const {
 				__unstableGetClientIdsTree,
@@ -54,14 +50,15 @@ export default function NavigationMenuContent( { rootClientId, onSelect } ) {
 				_clientIdsTree.length === 1 &&
 				getBlockName( _clientIdsTree[ 0 ].clientId ) ===
 					'core/page-list';
-			const isLoadingPages =
-				hasOnlyPageListBlock &&
-				isResolving( 'getEntityRecords', PAGES_QUERY );
+			const isLoadingPages = isResolving(
+				'getEntityRecords',
+				PAGES_QUERY
+			);
 			return {
 				clientIdsTree: _clientIdsTree,
 				// This is a small hack to wait for the navigation block
 				// to actually load its inner blocks.
-				isLoading:
+				shouldKeepLoading:
 					! areInnerBlocksControlled( rootClientId ) ||
 					isLoadingPages,
 				isSinglePageList:
@@ -74,6 +71,25 @@ export default function NavigationMenuContent( { rootClientId, onSelect } ) {
 	);
 	const { replaceBlock, __unstableMarkNextChangeAsNotPersistent } =
 		useDispatch( blockEditorStore );
+
+	// Delay loading stop by 50ms to avoid flickering.
+	useEffect( () => {
+		let timeoutId;
+		if ( shouldKeepLoading && ! isLoading ) {
+			setIsLoading( true );
+		}
+		if ( ! shouldKeepLoading && isLoading ) {
+			timeoutId = setTimeout( () => {
+				setIsLoading( false );
+				timeoutId = undefined;
+			}, 50 );
+		}
+		return () => {
+			if ( timeoutId ) {
+				clearTimeout( timeoutId );
+			}
+		};
+	}, [ shouldKeepLoading, clientIdsTree, isLoading ] );
 
 	const { OffCanvasEditor, LeafMoreMenu } = unlock( blockEditorPrivateApis );
 
