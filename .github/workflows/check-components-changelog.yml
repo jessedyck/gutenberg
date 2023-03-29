@@ -3,31 +3,35 @@ description: Check if the CHANGELOG file was updated when the Components package
 on:
     pull_request:
         types: [opened, synchronize]
-steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Check @wordpress/components CHANGELOG
-      run: |
-          package_path="packages/components/src"
-          changelog_path="packages/components/CHANGELOG.md"
-          changed_files="$(git diff --name-only components-changelog-check...HEAD)"
-          package_changed=false
-          changelog_changed=false
-          has_non_stories_files=false
+jobs:
+    check:
+        name: Check @wordpress/components CHANGELOG
+        runs-on: ubuntu-latest
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+        - name: Check @wordpress/components CHANGELOG
+          run: |
+              package_path="packages/components/src"
+              changelog_path="packages/components/CHANGELOG.md"
+              changed_files="$(git diff --name-only components-changelog-check...HEAD)"
+              package_changed=false
+              changelog_changed=false
+              has_non_stories_files=false
 
-          for file in $changed_files; do
-            if [[ "$file" == $package_path/* ]]; then
-              package_changed=true
-            fi
-            if [[ "$file" == "$changelog_path" ]]; then
-              changelog_changed=true
-            fi
-            if [[ "$file" != */stories/* ]]; then
-              has_non_stories_files=true
-            fi
-          done
+              for file in $changed_files; do
+                if [[ "$file" == $package_path/* ]]; then
+                  package_changed=true
+                fi
+                if [[ "$file" == "$changelog_path" ]]; then
+                  changelog_changed=true
+                fi
+                if [[ "$file" != */stories/* ]]; then
+                  has_non_stories_files=true
+                fi
+              done
 
-          if $package_changed && ! $changelog_changed && $has_non_stories_files; then
-            echo "Please add a CHANGELOG entry for the Components Package"
-            exit 1
-          fi
+              if $package_changed && ! $changelog_changed && $has_non_stories_files; then
+                echo "Please add a CHANGELOG entry for the Components Package"
+                exit 1
+              fi
