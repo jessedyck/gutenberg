@@ -14,7 +14,7 @@ jobs:
               run: |
                   package_path="packages/components/src"
                   changelog_path="packages/components/CHANGELOG.md"
-                  changed_files="$(git diff --name-only origin/trunk...HEAD)"
+                  changed_files="$(git diff --name-only trunk...HEAD)"
                   package_changed=false
                   changelog_changed=false
                   has_non_stories_files=false
