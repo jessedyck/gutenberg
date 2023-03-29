@@ -74,7 +74,7 @@ const UnconnectedColorPicker = (
 	const [ colorType, setColorType ] = useState< ColorType >(
 		copyFormat || 'hex'
 	);
-	// test
+
 	return (
 		<ColorfulWrapper ref={ forwardedRef } { ...divProps }>
 			<Picker
