@@ -1,8 +1,7 @@
 name: Check Components Changelog
 on:
     pull_request:
-        branches: [trunk]
-        types: [synchronize, opened, reopened, ready_for_review]
+        types: [opened]
 jobs:
     check:
         name: Check @wordpress/components CHANGELOG
