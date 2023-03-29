@@ -441,6 +441,19 @@ function gutenberg_register_packages_styles( $styles ) {
 add_action( 'wp_default_styles', 'gutenberg_register_packages_styles' );
 
 /**
+ * Gets the stylesheet handle for the current theme.
+ *
+ * @since 6.3
+ *
+ * retrn string
+ */
+function gutenberg_get_stylesheet_handle() {
+	$stylesheet_array = explode( '/', get_option('stylesheet') );
+	$stylesheet_slug = end( $stylesheet_array );
+	return $stylesheet_slug . '-style';
+}
+
+/**
  * Fetches, processes and compiles stored core styles, then combines and renders them to the page.
  * Styles are stored via the Style Engine API.
  *
@@ -463,6 +476,8 @@ add_action( 'wp_default_styles', 'gutenberg_register_packages_styles' );
 function gutenberg_enqueue_stored_styles( $options = array() ) {
 	$is_block_theme   = wp_is_block_theme();
 	$is_classic_theme = ! $is_block_theme;
+	// This is used to ensure that the style engine's stylesheet is loaded after the theme's stylesheet.
+	$stylesheet_handle = gutenberg_get_stylesheet_handle();
 
 	/*
 	 * For block themes, print stored styles in the header.
@@ -491,7 +506,7 @@ function gutenberg_enqueue_stored_styles( $options = array() ) {
 
 	// Combines Core styles.
 	if ( ! empty( $compiled_core_stylesheet ) ) {
-		wp_register_style( $style_tag_id, false, array(), true, true );
+		wp_register_style( $style_tag_id, false, array( $stylesheet_handle ), true, true );
 		wp_add_inline_style( $style_tag_id, $compiled_core_stylesheet );
 		wp_enqueue_style( $style_tag_id );
 	}
@@ -513,8 +528,8 @@ function gutenberg_enqueue_stored_styles( $options = array() ) {
 		}
 		$styles = gutenberg_style_engine_get_stylesheet_from_context( $store_name, $options );
 		if ( ! empty( $styles ) ) {
-			$key = "wp-style-engine-$store_name";
-			wp_register_style( $key, false, array(), true, true );
+			$key = "wp-style-engine-$store_name-help";
+			wp_register_style( $key, false, array( $stylesheet_handle ), true, true );
 			wp_add_inline_style( $key, $styles );
 			wp_enqueue_style( $key );
 		}
