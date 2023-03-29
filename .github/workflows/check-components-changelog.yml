@@ -1,6 +1,8 @@
+name: Check Components Changelog
 on:
     pull_request:
-        types: [opened, synchronize]
+        branches: [trunk]
+        types: [synchronize, opened, reopened, ready_for_review]
 steps:
     - name: Checkout code
       uses: actions/checkout@v2
