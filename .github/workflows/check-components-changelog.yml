@@ -1,3 +1,4 @@
+name: Check Components Changelog
 on:
     pull_request:
         types: [opened, synchronize]
