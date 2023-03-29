@@ -2,6 +2,7 @@ name: Check Components Changelog
 on:
     pull_request:
         types: [opened]
+    push:
 jobs:
     check:
         name: Check @wordpress/components CHANGELOG
@@ -30,4 +31,5 @@ jobs:
 
               if $package_changed && ! $changelog_changed && $has_non_stories_files; then
                 echo "Please add a CHANGELOG entry for the Components Package"
+                exit 1
               fi
