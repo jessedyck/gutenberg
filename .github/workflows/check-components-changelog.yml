@@ -1,5 +1,5 @@
 name: Check Components Changelog
-description: Check if the CHANGELOG file was updated when the Components package was changed
+
 on:
     pull_request:
         types: [opened, synchronize]
