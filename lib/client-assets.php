@@ -448,7 +448,7 @@ add_action( 'wp_default_styles', 'gutenberg_register_packages_styles' );
  * retrn string
  */
 function gutenberg_get_stylesheet_handle() {
-	$stylesheet_array = explode( '/', get_option('stylesheet') );
+	$stylesheet_array = explode( '/', get_option( 'stylesheet' ) );
 	$stylesheet_slug = end( $stylesheet_array );
 	return $stylesheet_slug . '-style';
 }
