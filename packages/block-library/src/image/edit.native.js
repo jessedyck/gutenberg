@@ -5,13 +5,16 @@ import {
 	ActivityIndicator,
 	Image as RNImage,
 	TouchableWithoutFeedback,
+	TouchableOpacity,
 	View,
+	Text,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 /**
  * WordPress dependencies
  */
+import apiFetch from '@wordpress/api-fetch';
 import { Component, useEffect } from '@wordpress/element';
 import {
 	requestMediaImport,
@@ -718,8 +721,51 @@ export class ImageEdit extends Component {
 			</BlockControls>
 		);
 
+		const buttonStyle = {
+			marginVertical: 4,
+			paddingVertical: 8,
+			backgroundColor: '#ccc',
+			borderRadius: 16,
+			alignItems: 'center',
+		};
+		const updateAltText = async ( value ) => {
+			if ( attributes.id ) {
+				const response = await apiFetch( {
+					path: `/wp/v2/media/${ attributes.id }`,
+					method: 'POST',
+					data: { alt_text: value },
+				} );
+				// eslint-disable-next-line no-console
+				console.log( 'Response', {
+					alt_text: response?.alt_text,
+				} );
+			} else {
+				// eslint-disable-next-line no-console
+				console.warning( 'No media id!' );
+			}
+		};
+		const testPOSTRequest = (
+			<PanelBody title={ 'Test POST request' }>
+				<TouchableOpacity
+					onPress={ async () => await updateAltText( 'TEST' ) }
+				>
+					<View style={ buttonStyle }>
+						<Text>{ "Update media alt_text with 'TEST'" }</Text>
+					</View>
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={ async () => await updateAltText( '' ) }
+				>
+					<View style={ buttonStyle }>
+						<Text>{ 'Set media alt_text empty' }</Text>
+					</View>
+				</TouchableOpacity>
+			</PanelBody>
+		);
+
 		const getInspectorControls = () => (
 			<InspectorControls>
+				{ testPOSTRequest }
 				<PanelBody title={ __( 'Settings' ) } />
 				<PanelBody style={ styles.panelBody }>
 					<BlockStyles clientId={ clientId } url={ url } />
