@@ -1,4 +1,3 @@
-name: Check Components Changelog
 on:
     pull_request:
         types: [opened, synchronize]
@@ -13,6 +12,7 @@ steps:
           package_changed=false
           changelog_changed=false
           has_non_stories_files=false
+
           for file in $changed_files; do
             if [[ "$file" == $package_path/* ]]; then
               package_changed=true
@@ -24,6 +24,7 @@ steps:
               has_non_stories_files=true
             fi
           done
+
           if $package_changed && ! $changelog_changed && $has_non_stories_files; then
             echo "Please add a CHANGELOG entry for the Components Package"
             exit 1
